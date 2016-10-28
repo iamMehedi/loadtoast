@@ -77,7 +77,7 @@ public class LoadToast {
         return this;
     }
 
-    public LoadToast show(){
+    LoadToast showToast(final CompletionCallback callback){
         if(!mInflated){
             mShowCalled = true;
             return this;
@@ -89,6 +89,27 @@ public class LoadToast {
         //mView.setVisibility(View.VISIBLE);
         ViewPropertyAnimator.animate(mView).alpha(1f).translationY(25 + mTranslationY)
                 .setInterpolator(new DecelerateInterpolator())
+                .setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if(callback != null) callback.onViewAnimationCompleted(mVisible);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        if(callback != null) callback.onViewAnimationCompleted(mVisible);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                })
                 .setDuration(300).setStartDelay(0).start();
 
         mVisible = true;
@@ -97,22 +118,39 @@ public class LoadToast {
         return this;
     }
 
-    public void success(){
+    public LoadToast show(){
+        return showToast(null);
+    }
+
+    public LoadToast show(CompletionCallback callback){
+        return showToast(callback);
+    }
+
+    private void done(boolean success, CompletionCallback callback){
         if(!mInflated){
             mToastCanceled = true;
             return;
         }
-        mView.success();
-        slideUp();
+        if(success) mView.success();
+        else mView.error();
+
+        slideUp(callback);
+    }
+
+    public void success(CompletionCallback callback){
+        done(true, callback);
+    }
+
+    public void error(CompletionCallback callback){
+        done(false, callback);
+    }
+
+    public void success(){
+        done(true, null);
     }
 
     public void error(){
-        if(!mInflated){
-            mToastCanceled = true;
-            return;
-        }
-        mView.error();
-        slideUp();
+        done(false, null);
     }
 
     private void checkZPosition(){
@@ -129,13 +167,38 @@ public class LoadToast {
         }
     }
 
-    private void slideUp(){
+    private void slideUp(final CompletionCallback callback){
         ViewPropertyAnimator.animate(mView).setStartDelay(1000).alpha(0f)
                 .translationY(-mView.getHeight() + mTranslationY)
                 .setInterpolator(new AccelerateInterpolator())
+                .setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if(callback != null) callback.onViewAnimationCompleted(mVisible);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        if(callback != null) callback.onViewAnimationCompleted(mVisible);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                })
                 .setDuration(300)
                 .start();
 
         mVisible = false;
+    }
+
+    public interface CompletionCallback{
+        void onViewAnimationCompleted(boolean isVisible);
     }
 }

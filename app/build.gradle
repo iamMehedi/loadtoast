@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
 
     lintOptions {
         abortOnError false
@@ -10,9 +10,9 @@ android {
 
     defaultConfig {
         applicationId "net.steamcrafted.gesturetrackerlib"
-        minSdkVersion 8
-        targetSdkVersion 22
-        versionCode 1
+        minSdkVersion 9
+        targetSdkVersion 24
+        versionCode 2
         versionName "1.0"
     }
     buildTypes {
@@ -26,5 +26,5 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':loadtoast')
-    compile 'com.android.support:appcompat-v7:22.+'
+    compile 'com.android.support:appcompat-v7:24.+'
 }
